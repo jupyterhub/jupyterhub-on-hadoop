@@ -1,7 +1,7 @@
 import alabaster
 
 # Project settings
-project = 'Deploying JupyterHub on Hadoop'
+project = 'JupyterHub on Hadoop'
 copyright = '2019, Jim Crist'
 author = 'Jim Crist'
 release = version = '0.1.0'
