@@ -13,6 +13,33 @@ Note that this guide is under active development. If you find things unclear or
 incorrect, or have any questions/comments, feel free to `create an issue on
 github`_.
 
+
+Overview
+--------
+
+JupyterHub is divided into three separate components:
+
+- Multiple **single-user notebook servers** (one per active user)
+- An **HTTP proxy** for proxying traffic between users and their respective
+  servers.
+- A central **Hub** that manages authentication and single-user server
+  startup/shutdown.
+
+When deploying JupyterHub on a Hadoop cluster, the **Hub** and **HTTP proxy**
+are run on a single node (typically an edge node), and the **single-user
+servers** are distributed throughout the cluster. 
+
+.. image:: /_images/architecture.svg
+    :width: 90 %
+    :align: center
+    :alt: JupyterHub on Hadoop high-level architecture
+
+The resource requirements for the Hub node are minimal (a minimum of 1 GB RAM
+should be sufficient), as user's notebooks (where the actual work is being done)
+are distributed throughout the Hadoop cluster reducing the load on any single
+node.
+
+
 .. _JupyterHub: https://jupyterhub.readthedocs.io/
 .. _notebook: https://jupyter.org/
 .. _Zero-to-JupyterHub-Kubernetes: https://zero-to-jupyterhub.readthedocs.io/
