@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Install &amp; Setup Basic JupyterHub &#8212; JupyterHub on Hadoop 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configure YarnSpawner" href="manual-spawner.html" />
+    <link rel="prev" title="Manual Installation" href="manual-installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="install-setup-basic-jupyterhub">
+<h1>Install &amp; Setup Basic JupyterHub<a class="headerlink" href="#install-setup-basic-jupyterhub" title="Permalink to this headline">¶</a></h1>
+<p>Here we setup a basic JupyterHub installation. At the end of this section
+you’ll have a running (but nonfunctional) JupyterHub server. Further sections
+will complete the install by integrating it with your cluster.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#create-a-user-for-running-jupyterhub" id="id1">Create a user for running JupyterHub</a></p></li>
+<li><p><a class="reference internal" href="#create-directories-to-store-jupyterhub-installation" id="id2">Create directories to store JupyterHub Installation</a></p></li>
+<li><p><a class="reference internal" href="#install-a-private-python-environment" id="id3">Install a private python environment</a></p></li>
+<li><p><a class="reference internal" href="#install-jupyterhub" id="id4">Install JupyterHub</a></p></li>
+<li><p><a class="reference internal" href="#configure-jupyterhub" id="id5">Configure JupyterHub</a></p></li>
+<li><p><a class="reference internal" href="#open-jupyterhub-port" id="id6">Open JupyterHub Port</a></p></li>
+<li><p><a class="reference internal" href="#start-jupyterhub-and-check-that-it-s-accessible" id="id7">Start JupyterHub and check that it’s accessible</a></p></li>
+</ul>
+</div>
+<div class="section" id="create-a-user-for-running-jupyterhub">
+<h2><a class="toc-backref" href="#id1">Create a user for running JupyterHub</a><a class="headerlink" href="#create-a-user-for-running-jupyterhub" title="Permalink to this headline">¶</a></h2>
+<p>Before installing anything, you’ll need to create the user account that will be
+used to run JupyterHub. Here we’ll use <code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ adduser jupyterhub
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-directories-to-store-jupyterhub-installation">
+<h2><a class="toc-backref" href="#id2">Create directories to store JupyterHub Installation</a><a class="headerlink" href="#create-directories-to-store-jupyterhub-installation" title="Permalink to this headline">¶</a></h2>
+<p>A JupyterHub installation has three types of files which will need their own
+directories created before installation:</p>
+<ul class="simple">
+<li><p>Software files. This includes a Python environment and all required
+libraries. Here we use <code class="docutils literal notranslate"><span class="pre">/opt/jupyterhub</span></code>.</p></li>
+<li><p>Configuration files. Here we use <code class="docutils literal notranslate"><span class="pre">/etc/jupyterhub</span></code>.</p></li>
+<li><p>Runtime files. By default this includes a sqlite database (can be configured
+to use other databases). Here we use <code class="docutils literal notranslate"><span class="pre">/var/jupyterhub</span></code>.</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Software files</span>
+$ mkdir -p /opt/jupyterhub
+
+<span class="c1"># Configuration files</span>
+$ mkdir /etc/jupyterhub
+
+<span class="c1"># Runtime files</span>
+$ mkdir /var/jupyterhub
+$ chown jupyterhub /var/jupyterhub
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-a-private-python-environment">
+<h2><a class="toc-backref" href="#id3">Install a private python environment</a><a class="headerlink" href="#install-a-private-python-environment" title="Permalink to this headline">¶</a></h2>
+<p>To avoid interactions between the system python installation and JupyterHub,
+we’ll install a full Python environment into the software directory. The
+easiest way to do this is to use <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a>, but this isn’t a strict
+requirement.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/miniconda.sh
+$ bash /tmp/miniconda.sh -b -p /opt/jupyterhub/miniconda
+$ rm /tmp/miniconda.sh
+</pre></div>
+</div>
+<p>We also recommend adding miniconda to the <code class="docutils literal notranslate"><span class="pre">root</span></code> user’s path to ease further
+commands.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;/opt/jupyterhub/miniconda/bin:$PATH&quot;&#39;</span> &gt;&gt; /root/.bashrc
+$ <span class="nb">source</span> /root/.bashrc
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-jupyterhub">
+<h2><a class="toc-backref" href="#id4">Install JupyterHub</a><a class="headerlink" href="#install-jupyterhub" title="Permalink to this headline">¶</a></h2>
+<p>Now we can install JupyterHub and its dependencies. Since JupyterHub has many
+configuration options, we’ll only install the basic <code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code> application
+for now - further steps will add more packages later on.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda install -c conda-forge jupyterhub -y
+</pre></div>
+</div>
+</div>
+<div class="section" id="configure-jupyterhub">
+<h2><a class="toc-backref" href="#id5">Configure JupyterHub</a><a class="headerlink" href="#configure-jupyterhub" title="Permalink to this headline">¶</a></h2>
+<p>Now we’re ready to configure our basic JupyterHub installation and get things
+running to see if everything works. JupyterHub configuration is written as a
+Python file (typically <code class="docutils literal notranslate"><span class="pre">/etc/jupyterhub/jupyterhub_config.py</span></code>). Here we’ll
+configure only a few fields:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">JupyterHub.bind_url</span></code>: the complete address that JupyterHub will server at.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">JupyterHub.db_url</span></code>: the address that the JupyterHub database can be
+reached at. JupyterHub supports many databases - for now we’ll use sqlite.
+For information on using a different database see <a class="reference external" href="https://jupyterhub.readthedocs.io/en/stable/reference/database.html">the JupyterHub docs</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">JupyterHub.cookie_secret_file</span></code>: the location to store the cookie secret.
+There are other options for setting the cookie secret, but saving a secret
+token to a file in a secure location is a good default option. See <a class="reference external" href="https://jupyterhub.readthedocs.io/en/stable/getting-started/security-basics.html#cookie-secret">the
+JupyterHub docs</a>
+for more information.</p></li>
+</ul>
+<p>Create the cookie secret file and change permissions so only the <code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code>
+user has access.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ openssl rand -hex <span class="m">32</span> &gt; /etc/jupyterhub/jupyterhub_cookie_secret
+$ chmod <span class="m">600</span> /etc/jupyterhub/jupyterhub_cookie_secret
+$ chown jupyterhub /etc/jupyterhub/jupyterhub_cookie_secret
+</pre></div>
+</div>
+<p>Save the following configuration to <code class="docutils literal notranslate"><span class="pre">/etc/jupyterhub/jupyterhub_config.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">bind_url</span> <span class="o">=</span> <span class="s1">&#39;http://:&lt;PORT-TO-USE&gt;&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">cookie_secret_file</span> <span class="o">=</span> <span class="s1">&#39;/etc/jupyterhub/jupyterhub_cookie_secret&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">db_url</span> <span class="o">=</span> <span class="s1">&#39;sqlite:////var/jupyterhub/jupyterhub.sqlite&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="open-jupyterhub-port">
+<h2><a class="toc-backref" href="#id6">Open JupyterHub Port</a><a class="headerlink" href="#open-jupyterhub-port" title="Permalink to this headline">¶</a></h2>
+<p>For users to access JupyterHub, they’ll need access to the port set in
+<code class="docutils literal notranslate"><span class="pre">JupyterHub.bind_url</span></code> above. How to open this port is system specific and is
+left as an exercise for the reader.</p>
+</div>
+<div class="section" id="start-jupyterhub-and-check-that-it-s-accessible">
+<h2><a class="toc-backref" href="#id7">Start JupyterHub and check that it’s accessible</a><a class="headerlink" href="#start-jupyterhub-and-check-that-it-s-accessible" title="Permalink to this headline">¶</a></h2>
+<p>At this point you should be able to start JupyterHub as the <code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code> user
+using your created configuration file. The JupyterHub process will be a long
+running process - how you intend to manage it (<code class="docutils literal notranslate"><span class="pre">supervisord</span></code>, etc…) is
+system specific. The requirements are:</p>
+<ul class="simple">
+<li><p>Start with <code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code> as the user</p></li>
+<li><p>Start with <code class="docutils literal notranslate"><span class="pre">/var/jupyterhub</span></code> as the working directory</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">/opt/jupyterhub/miniconda/bin</span></code> to path</p></li>
+<li><p>Specify the configuration file location with <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">/etc/jupyterhub/jupyterhub_config.py</span></code></p></li>
+</ul>
+<p>For ease, we recommend creating a small bash script stored at
+<code class="docutils literal notranslate"><span class="pre">/opt/jupyterhub/start-jupyterhub</span></code> to set this up:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+
+<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;/opt/jupyterhub/miniconda/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+<span class="nb">cd</span> /var/jupyterhub
+jupyterhub -f /etc/jupyterhub/jupyterhub_config.py
+</pre></div>
+</div>
+<p>For <em>testing</em> here’s how you might start JupyterHub manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> /var/jupyterhub
+$ sudo -iu jupyterhub /opt/jupyterhub/start-jupyterhub
+</pre></div>
+</div>
+<p>Things won’t work yet (more configuration is still needed), but you should at
+least have access to a web page.</p>
+<a class="reference internal image-reference" href="_images/login-page-hello-world.png"><img alt="JupyterHub &quot;Hello World&quot; login page" class="align-center" src="_images/login-page-hello-world.png" style="width: 90%;" /></a>
+<p>In the next section we’ll configure spawners and authentication to get things
+fully working.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">JupyterHub on Hadoop</a></h1>
+
+
+
+<p class="blurb">Documentation for deploying JupyterHub on a Hadoop Cluster</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=jcrist&repo=jupyterhub-on-hadoop&type=watch&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/jcrist/jupyterhub-on-hadoop">
+    <img
+        alt="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+        src="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="manual-installation.html">Manual Installation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Install &amp; Setup Basic JupyterHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual-spawner.html">Configure YarnSpawner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual-authentication.html">Add Authentication</a></li>
+</ul>
+</li>
+</ul>
+
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in the <a href="https://github.com/jcrist/jupyterhub-on-hadoop/issues">issue tracker</a>.
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jim Crist.
+      
+      |
+      <a href="_sources/manual-setup.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

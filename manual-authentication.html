@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Add Authentication &#8212; JupyterHub on Hadoop 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Configure YarnSpawner" href="manual-spawner.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="add-authentication">
+<h1>Add Authentication<a class="headerlink" href="#add-authentication" title="Permalink to this headline">¶</a></h1>
+<p>The last thing we need to do before testing is configure an <a class="reference external" href="https://jupyterhub.readthedocs.io/en/stable/reference/authenticators.html">authenticator</a>.
+JupyterHub has pluggable authentication, and implementations for many common
+authentication models already exist. Here we discuss a few that may be of
+interest - for more information see JupyterHub’s <a class="reference external" href="https://jupyterhub.readthedocs.io/en/stable/reference/authenticators.html">authenticator docs</a>.</p>
+<div class="section" id="dummy-authenticator">
+<h2>Dummy Authenticator<a class="headerlink" href="#dummy-authenticator" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://github.com/jupyterhub/dummyauthenticator">dummy authenticator</a> is useful for testing purposes, but should <em>not</em> be
+used in production. It accepts any username and password combination as valid.
+To make things <em>slightly</em> more secure, you can set a single global shared
+password.</p>
+<p>We recommend installing this authenticator to test that things are working
+before moving on to an actually secure authenticator implementation.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the authenticator in JupyterHub&#39;s python environment</span>
+$ pip install jupyterhub-dummyauthenticator
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">authenticator_class</span> <span class="o">=</span> <span class="s1">&#39;dummyauthenticator.DummyAuthenticator&#39;</span>
+<span class="c1"># Optionally add a shared global password to be used by all users</span>
+<span class="n">c</span><span class="o">.</span><span class="n">DummyAuthenticator</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;password-for-testing&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">JupyterHub on Hadoop</a></h1>
+
+
+
+<p class="blurb">Documentation for deploying JupyterHub on a Hadoop Cluster</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=jcrist&repo=jupyterhub-on-hadoop&type=watch&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/jcrist/jupyterhub-on-hadoop">
+    <img
+        alt="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+        src="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="manual-installation.html">Manual Installation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="manual-setup.html">Install &amp; Setup Basic JupyterHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual-spawner.html">Configure YarnSpawner</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Add Authentication</a></li>
+</ul>
+</li>
+</ul>
+
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in the <a href="https://github.com/jcrist/jupyterhub-on-hadoop/issues">issue tracker</a>.
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jim Crist.
+      
+      |
+      <a href="_sources/manual-authentication.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

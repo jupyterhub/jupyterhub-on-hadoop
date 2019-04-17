@@ -1,0 +1,397 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Configure YarnSpawner &#8212; JupyterHub on Hadoop 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Add Authentication" href="manual-authentication.html" />
+    <link rel="prev" title="Install &amp; Setup Basic JupyterHub" href="manual-setup.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="configure-yarnspawner">
+<h1>Configure YarnSpawner<a class="headerlink" href="#configure-yarnspawner" title="Permalink to this headline">¶</a></h1>
+<p>We now have JupyterHub installed, but it can’t really do anything yet. For
+JupyterHub to manage user’s notebook servers, we need to configure a <a class="reference external" href="https://jupyterhub.readthedocs.io/en/stable/reference/spawners.html">Spawner</a>
+for it to use. <a class="reference external" href="https://jcrist.github.io/yarnspawner/">YarnSpawner</a> is a Spawner implementation that launches
+notebook servers on Apache Hadoop/YARN clusters. Here we’ll discuss
+installation and configuration of this spawner, for more information see
+the <a class="reference external" href="https://jcrist.github.io/yarnspawner/">YarnSpawner documentation</a></p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#install-jupyterhub-yarnspawner" id="id1">Install jupyterhub-yarnspawner</a></p></li>
+<li><p><a class="reference internal" href="#set-the-jupyterhub-spawner-class" id="id2">Set the JupyterHub Spawner Class</a></p></li>
+<li><p><a class="reference internal" href="#configure-the-hub-connect-ip" id="id3">Configure the Hub Connect IP</a></p></li>
+<li><p><a class="reference internal" href="#enable-proxy-user-permissions" id="id4">Enable Proxy User Permissions</a></p></li>
+<li><p><a class="reference internal" href="#enable-kerberos-security-optional" id="id5">Enable Kerberos Security (Optional)</a></p></li>
+<li><p><a class="reference internal" href="#specifying-python-environments" id="id6">Specifying Python Environments</a></p>
+<ul>
+<li><p><a class="reference internal" href="#using-a-local-environment" id="id7">Using a Local Environment</a></p></li>
+<li><p><a class="reference internal" href="#using-an-archived-environment" id="id8">Using an Archived Environment</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#additional-configuration-options" id="id9">Additional Configuration Options</a></p></li>
+<li><p><a class="reference internal" href="#example" id="id10">Example</a></p></li>
+</ul>
+</div>
+<div class="section" id="install-jupyterhub-yarnspawner">
+<h2><a class="toc-backref" href="#id1">Install jupyterhub-yarnspawner</a><a class="headerlink" href="#install-jupyterhub-yarnspawner" title="Permalink to this headline">¶</a></h2>
+<p>Yarnpawner should be installed in the same environment that JupyterHub is
+running in.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda install -c conda-forge jupyterhub-yarnspawner -y
+</pre></div>
+</div>
+</div>
+<div class="section" id="set-the-jupyterhub-spawner-class">
+<h2><a class="toc-backref" href="#id2">Set the JupyterHub Spawner Class</a><a class="headerlink" href="#set-the-jupyterhub-spawner-class" title="Permalink to this headline">¶</a></h2>
+<p>Tell JupyterHub to use <code class="docutils literal notranslate"><span class="pre">YarnSpawner</span></code> by adding the following line to your
+<code class="docutils literal notranslate"><span class="pre">jupyterhub_config.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">spawner_class</span> <span class="o">=</span> <span class="s1">&#39;yarnspawner.YarnSpawner&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configure-the-hub-connect-ip">
+<h2><a class="toc-backref" href="#id3">Configure the Hub Connect IP</a><a class="headerlink" href="#configure-the-hub-connect-ip" title="Permalink to this headline">¶</a></h2>
+<p>By default JupyterHub runs its internal communications server on <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>,
+meaning its only accesible from the machine running JupyterHub.</p>
+<p>Since the servers started by <code class="docutils literal notranslate"><span class="pre">YarnSpawner</span></code> are running on other machines in
+the cluster, we’ll need to update this address to something more accessible:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set to &#39;&#39; for all interfaces. Can also set to the hostname of the</span>
+<span class="c1"># JupyterHub machine.</span>
+<span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">hub_ip</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="enable-proxy-user-permissions">
+<h2><a class="toc-backref" href="#id4">Enable Proxy User Permissions</a><a class="headerlink" href="#enable-proxy-user-permissions" title="Permalink to this headline">¶</a></h2>
+<p>YarnSpawner makes full use of Hadoop’s security model, and will start Jupyter
+notebook server’s in containers with the requesting user’s permissions (e.g. if
+<code class="docutils literal notranslate"><span class="pre">alice</span></code> logs in to JupyterHub, their notebook server will be running as user
+<code class="docutils literal notranslate"><span class="pre">alice</span></code>). To accomplish this, JupyterHub needs <a class="reference external" href="https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/Superusers.html">proxy user</a> permissions.
+This allows the JupyterHub server to perform actions impersonating another user.</p>
+<p>For JupyterHub to work properly, you’ll need to enable <a class="reference external" href="https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/Superusers.html">proxy user</a>
+permissions for the <code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code> user account. The users <code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code> has
+permission to impersonate can be restricted to certain groups, and requests to
+impersonate may be restricted to certain hosts. At a minimum, <code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code>
+will require permission to impersonate any JupyterHub user, with requests
+allowed from at least the host running JupyterHub.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;property&gt;</span>
+  <span class="nt">&lt;name&gt;</span>hadoop.proxyuser.jupyterhub.hosts<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;value&gt;</span>host-where-jupyterhub-is-running<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;property&gt;</span>
+  <span class="nt">&lt;name&gt;</span>hadoop.proxyuser.jupyterhub.groups<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;value&gt;</span>group1,group2<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+</pre></div>
+</div>
+<p>If looser restrictions are acceptable, you may also use the wildcard <code class="docutils literal notranslate"><span class="pre">*</span></code>
+to allow impersonation of any user or from any host.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;property&gt;</span>
+  <span class="nt">&lt;name&gt;</span>hadoop.proxyuser.jupyterhub.hosts<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;value&gt;</span>*<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;property&gt;</span>
+  <span class="nt">&lt;name&gt;</span>hadoop.proxyuser.jupyterhub.groups<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;value&gt;</span>*<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/property&gt;</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/Superusers.html">proxy user</a> documentation for more information.</p>
+</div>
+<div class="section" id="enable-kerberos-security-optional">
+<h2><a class="toc-backref" href="#id5">Enable Kerberos Security (Optional)</a><a class="headerlink" href="#enable-kerberos-security-optional" title="Permalink to this headline">¶</a></h2>
+<p>If your cluster has Kerberos enabled, you’ll also need to create a principal
+and keytab for the <code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code> user.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the jupyterhub principal</span>
+$ kadmin -q <span class="s2">&quot;addprinc -randkey jupyterhub@YOUR_REALM.COM&quot;</span>
+
+<span class="c1"># Create a keytab</span>
+$ kadmin -q <span class="s2">&quot;xst -norandkey -k /etc/jupyterhub/jupyterhub.keytab</span>
+</pre></div>
+</div>
+<p>Store the keytab file wherever you see fit (we recommend storing it along with
+the JupyterHub configuration, as above). You’ll also want to make sure that
+<code class="docutils literal notranslate"><span class="pre">jupyterhub.keytab</span></code> is only readable by the <code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code> user.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ chown jupyterhub /etc/jupyterhub/jupyterhub.keytab
+$ chmod <span class="m">400</span> /etc/jupyterhub/jupyterhub.keytab
+</pre></div>
+</div>
+<p>To configure JupyterHub to use this keytab file, you’ll need to add the
+following line to your <code class="docutils literal notranslate"><span class="pre">jupyterhub_config.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The principal JupyterHub is running as</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">principal</span> <span class="o">=</span> <span class="s1">&#39;jupyterhub&#39;</span>
+
+<span class="c1"># Path to the keytab you created</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">keytab</span> <span class="o">=</span> <span class="s1">&#39;/etc/jupyterhub/jupyterhub.keytab&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="specifying-python-environments">
+<h2><a class="toc-backref" href="#id6">Specifying Python Environments</a><a class="headerlink" href="#specifying-python-environments" title="Permalink to this headline">¶</a></h2>
+<p>Since the user’s notebook servers will be each running in their own YARN
+container, you’ll need to provide a way for Python environments to be available
+to these containers. You have a few options here:</p>
+<ul class="simple">
+<li><p>Install identical Python environments on every node</p></li>
+<li><p>Archive environments to be distributed to the container at runtime (recommended)</p></li>
+</ul>
+<p>In either case, the Python environment requires at minimum:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">jupyterhub-yarnspawner</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">notebook</span></code></p></li>
+</ul>
+<div class="section" id="using-a-local-environment">
+<h3><a class="toc-backref" href="#id7">Using a Local Environment</a><a class="headerlink" href="#using-a-local-environment" title="Permalink to this headline">¶</a></h3>
+<p>If you’ve installed identical Python environments on every node, you only need
+to configure <code class="docutils literal notranslate"><span class="pre">YarnSpawner</span></code> to use the provided Python. This could be done a
+few different ways:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the path to python in the startup command</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;/path/to/python -m yarnspawner.singleuser&#39;</span>
+
+<span class="c1"># OR</span>
+<span class="c1"># Activate a local conda environment before startup</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">prologue</span> <span class="o">=</span> <span class="s1">&#39;conda activate /path/to/your/environment&#39;</span>
+
+<span class="c1"># OR</span>
+<span class="c1"># Activate a virtual environment before startup</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">prologue</span> <span class="o">=</span> <span class="s1">&#39;source /path/to/your/environment/bin/activate&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-an-archived-environment">
+<h3><a class="toc-backref" href="#id8">Using an Archived Environment</a><a class="headerlink" href="#using-an-archived-environment" title="Permalink to this headline">¶</a></h3>
+<p>YARN also provides mechanisms to “localize” files/archives to a container
+before starting the application. This can be used to distribute Python
+environments at runtime. This approach is appealing in that it doesn’t require
+installing anything throughout the cluster, and allows for centrally managing
+your user’s Python environments.</p>
+<p>Packaging environments for distribution is usually accomplished using</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://conda.github.io/conda-pack/">conda-pack</a> for <a class="reference external" href="http://conda.io/">conda</a> environments</p></li>
+<li><p><a class="reference external" href="https://jcrist.github.io/venv-pack/">venv-pack</a>  for virtual environments (both <a class="reference external" href="https://virtualenv.pypa.io/en/stable/">venv</a> and <a class="reference external" href="https://virtualenv.pypa.io/en/stable/">virtualenv</a> supported)</p></li>
+</ul>
+<p>Both are tools for taking an environment and creating an archive of it in a way
+that (most) absolute paths in any libraries or scripts are altered to be
+relocatable. This archive then can be distributed with your application, and
+will be automatically extracted during <a class="reference external" href="https://hortonworks.com/blog/resource-localization-in-yarn-deep-dive/">YARN resource localization</a></p>
+<p>Below we demonstrate creating and packaging a Conda environment containing all
+the required Jupyter packages, as well as <code class="docutils literal notranslate"><span class="pre">pandas</span></code> and <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>.
+Additional packages could be added as needed.</p>
+<p><strong>Packaging a Conda Environment with Conda-Pack</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make a folder for storing the conda environments locally</span>
+$ mkdir /opt/jupyterhub/envs
+
+<span class="c1"># Create a new conda environment</span>
+$ conda create -c conda-forge -y -p /opt/jupyterhub/envs/example
+...
+
+<span class="c1"># Activate the environment</span>
+$ conda activate /opt/jupyterhub/envs/example
+
+<span class="c1"># Install the needed packages</span>
+$ conda install -c conda-forge -y <span class="se">\</span>
+conda-pack <span class="se">\</span>
+jupyterhub-yarnspawner <span class="se">\</span>
+pandas <span class="se">\</span>
+scikit-learn
+...
+
+<span class="c1"># Pip required to avoid hardcoded path in kernelspec (for now)</span>
+$ pip install notebook
+
+<span class="c1"># Package the environment into example.tar.gz</span>
+$ conda pack -o example.tar.gz
+Collecting packages...
+Packing environment at <span class="s1">&#39;/opt/jupyterhub/envs/example&#39;</span> to <span class="s1">&#39;example.tar.gz&#39;</span>
+<span class="o">[</span><span class="c1">########################################] | 100% Completed | 17.9s</span>
+</pre></div>
+</div>
+<p><strong>Using the Packaged Environment</strong></p>
+<p>It is recommended to upload the environments to some directory on HDFS
+beforehand, to avoid repeating the upload cost for every user. This directory
+should be readable by all users, but writable only by the admin user managing
+Python environments (here we’ll use the <code class="docutils literal notranslate"><span class="pre">jupyterhub</span></code> user, and create a
+<code class="docutils literal notranslate"><span class="pre">/jupyterhub</span></code> directory).</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ hdfs dfs -mkdir -p /jupyterhub
+$ hdfs dfs -chown jupyterhub /jupyterhub
+$ hdfs dfs -chmod <span class="m">755</span> /jupyterhub
+</pre></div>
+</div>
+<p>Uploading our already packaged environment to hdfs:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ hdfs dfs -put /opt/jupyterhub/envs/example.tar.gz /jupyterhub/example.tar.gz
+</pre></div>
+</div>
+<p>To use the packaged environment with <code class="docutils literal notranslate"><span class="pre">YarnSpawner</span></code>, you need to include
+the archive in <code class="docutils literal notranslate"><span class="pre">YarnSpawner.localize_files</span></code>, and activate the environment in
+<code class="docutils literal notranslate"><span class="pre">YarnSpawner.prologue</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">localize_files</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;environment&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;hdfs:///jupyterhub/example.tar.gz&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;visibility&#39;</span><span class="p">:</span> <span class="s1">&#39;public&#39;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">prologue</span> <span class="o">=</span> <span class="s1">&#39;source environment/bin/activate&#39;</span>
+</pre></div>
+</div>
+<p>Note that we set <code class="docutils literal notranslate"><span class="pre">visibility</span></code> to <code class="docutils literal notranslate"><span class="pre">public</span></code> for the environment, so that
+multiple users can all share the same localized environment (reducing the cost
+of moving the environments around).</p>
+<p>For more information, see the <a class="reference external" href="https://jcrist.github.io/skein/distributing-files.html">Skein documentation on distributing files</a>.</p>
+</div>
+</div>
+<div class="section" id="additional-configuration-options">
+<h2><a class="toc-backref" href="#id9">Additional Configuration Options</a><a class="headerlink" href="#additional-configuration-options" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">YarnSpawner</span></code> has several additional configuration fields. See the
+<a class="reference external" href="https://jcrist.github.io/yarnspawner/">YarnSpawner documentation</a> for more information on all available options. At
+a minimum you’ll probably want to configure the memory and cpu limits, as well
+as which YARN queue to use.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The memory limit for a notebook instance.</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">mem_limit</span> <span class="o">=</span> <span class="s1">&#39;2 G&#39;</span>
+
+<span class="c1"># The cpu limit for a notebook instance</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">cpu_limit</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># The YARN queue to use</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="s1">&#39;...&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example">
+<h2><a class="toc-backref" href="#id10">Example</a><a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>In summary, an example <code class="docutils literal notranslate"><span class="pre">jupyterhub_config.py</span></code> configuration enabling
+<code class="docutils literal notranslate"><span class="pre">yarnspawner</span></code> might look like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make the JupyterHub internal communication accessible from other machines</span>
+<span class="c1"># in the cluster</span>
+<span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">hub_ip</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+<span class="c1"># Enable yarnspawner</span>
+<span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">spawner_class</span> <span class="o">=</span> <span class="s1">&#39;yarnspawner.YarnSpawner&#39;</span>
+
+<span class="c1"># Configuration for kerberos security</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">principal</span> <span class="o">=</span> <span class="s1">&#39;jupyterhub&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">keytab</span> <span class="o">=</span> <span class="s1">&#39;/etc/jupyterhub/jupyterhub.keytab&#39;</span>
+
+<span class="c1"># Resource limits per-user</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">mem_limit</span> <span class="o">=</span> <span class="s1">&#39;2 G&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">cpu_limit</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># The YARN queue to use</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="s1">&#39;jupyterhub&#39;</span>
+
+<span class="c1"># Specify location of the archived Python environment</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">localize_files</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;environment&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;hdfs:///jupyterhub/example.tar.gz&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;visibility&#39;</span><span class="p">:</span> <span class="s1">&#39;public&#39;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">prologue</span> <span class="o">=</span> <span class="s1">&#39;source environment/bin/activate&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">JupyterHub on Hadoop</a></h1>
+
+
+
+<p class="blurb">Documentation for deploying JupyterHub on a Hadoop Cluster</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=jcrist&repo=jupyterhub-on-hadoop&type=watch&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/jcrist/jupyterhub-on-hadoop">
+    <img
+        alt="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+        src="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="manual-installation.html">Manual Installation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="manual-setup.html">Install &amp; Setup Basic JupyterHub</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configure YarnSpawner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual-authentication.html">Add Authentication</a></li>
+</ul>
+</li>
+</ul>
+
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in the <a href="https://github.com/jcrist/jupyterhub-on-hadoop/issues">issue tracker</a>.
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jim Crist.
+      
+      |
+      <a href="_sources/manual-spawner.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
