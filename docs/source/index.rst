@@ -27,7 +27,7 @@ JupyterHub is divided into three separate components:
 
 When deploying JupyterHub on a Hadoop cluster, the **Hub** and **HTTP proxy**
 are run on a single node (typically an edge node), and the **single-user
-servers** are distributed throughout the cluster. 
+servers** are distributed throughout the cluster.
 
 .. image:: /_images/architecture.svg
     :width: 90 %
@@ -38,6 +38,15 @@ The resource requirements for the Hub node are minimal (a minimum of 1 GB RAM
 should be sufficient), as user's notebooks (where the actual work is being done)
 are distributed throughout the Hadoop cluster reducing the load on any single
 node.
+
+
+Installation Options
+--------------------
+
+.. toctree::
+    :titlesonly:
+
+    manual-installation
 
 
 .. _JupyterHub: https://jupyterhub.readthedocs.io/
