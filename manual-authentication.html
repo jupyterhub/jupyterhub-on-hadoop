@@ -37,8 +37,16 @@
 JupyterHub has pluggable authentication, and implementations for many common
 authentication models already exist. Here we discuss a few that may be of
 interest - for more information see JupyterHub’s <a class="reference external" href="https://jupyterhub.readthedocs.io/en/stable/reference/authenticators.html">authenticator docs</a>.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#dummy-authenticator" id="id5">Dummy Authenticator</a></p></li>
+<li><p><a class="reference internal" href="#kerberos-authenticator" id="id6">Kerberos Authenticator</a></p></li>
+<li><p><a class="reference internal" href="#ldap-authenticator" id="id7">LDAP Authenticator</a></p></li>
+<li><p><a class="reference internal" href="#remote-user-authenticator" id="id8">Remote User Authenticator</a></p></li>
+</ul>
+</div>
 <div class="section" id="dummy-authenticator">
-<h2>Dummy Authenticator<a class="headerlink" href="#dummy-authenticator" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Dummy Authenticator</a><a class="headerlink" href="#dummy-authenticator" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference external" href="https://github.com/jupyterhub/dummyauthenticator">dummy authenticator</a> is useful for testing purposes, but should <em>not</em> be
 used in production. It accepts any username and password combination as valid.
 To make things <em>slightly</em> more secure, you can set a single global shared
@@ -54,6 +62,65 @@ $ pip install jupyterhub-dummyauthenticator
 <span class="n">c</span><span class="o">.</span><span class="n">DummyAuthenticator</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;password-for-testing&quot;</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="kerberos-authenticator">
+<h2><a class="toc-backref" href="#id6">Kerberos Authenticator</a><a class="headerlink" href="#kerberos-authenticator" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://jcrist.github.io/kerberosauthenticator/">kerberos authenticator</a> can be used to enable user authentication with
+<a class="reference external" href="https://web.mit.edu/kerberos/">Kerberos</a>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the authenticator in JupyterHub&#39;s python environment</span>
+$ pip install jupyterhub-kerberosauthenticator
+</pre></div>
+</div>
+<p>Kerberos authentication requires a keytab for the <code class="docutils literal notranslate"><span class="pre">HTTP</span></code> service principal
+for the host running JupyterHub. Keytabs can be created on the command-line as
+follows:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ kadmin -q <span class="s2">&quot;addprinc -randkey HTTP/FQDN&quot;</span>
+$ kadmin -q <span class="s2">&quot;xst -norandkey -k /etc/jupyterhub/HTTP.keytab HTTP/FQDN&quot;</span>
+
+<span class="c1"># Make the keytab readable/writable only by jupyterhub</span>
+$ chown jupyterhub /etc/jupyterhub/HTTP.keytab
+$ chmod <span class="m">400</span> /etc/jupyterhub/HTTP.keytab
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">FQDN</span></code> is the <a class="reference external" href="https://en.wikipedia.org/wiki/Fully_qualified_domain_name">fully qualified domain name</a> of the host running
+JupyterHub. Alternatively you could include the <code class="docutils literal notranslate"><span class="pre">HTTP</span></code> principal in the
+keytab created during <a class="reference internal" href="manual-spawner.html#create-spawner-keytab"><span class="std std-ref">spawner configuration</span></a>.</p>
+<p>The authenticator can then be enabled by adding the following lines to your
+<code class="docutils literal notranslate"><span class="pre">jupyterhub_config.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">authenticator_class</span> <span class="o">=</span> <span class="s1">&#39;kerberosauthenticator.KerberosAuthenticator&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">keytab</span> <span class="o">=</span> <span class="s1">&#39;/etc/jupyterhub/HTTP.keytab&#39;</span>
+</pre></div>
+</div>
+<p>For more information see the <a class="reference external" href="https://jcrist.github.io/kerberosauthenticator/">kerberos authenticator docs</a>.</p>
+</div>
+<div class="section" id="ldap-authenticator">
+<h2><a class="toc-backref" href="#id7">LDAP Authenticator</a><a class="headerlink" href="#ldap-authenticator" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://github.com/jupyterhub/ldapauthenticator">LDAP authenticator</a> can be used to authenticate with <a class="reference external" href="https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol">LDAP</a> or <a class="reference external" href="https://en.wikipedia.org/wiki/Active_Directory">Active
+Directory</a>. An example install and configuration might look like:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the authenticator in JupyterHub&#39;s python environment</span>
+$ pip install jupyterhub-ldapauthenticator
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">authenticator_class</span> <span class="o">=</span> <span class="s1">&#39;ldapauthenticator.LDAPAuthenticator&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">LDAPAuthenticator</span><span class="o">.</span><span class="n">server_address</span> <span class="o">=</span> <span class="s1">&#39;address.of.your.ldap.server&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">LDAPAuthenticator</span><span class="o">.</span><span class="n">bind_dn_template</span> <span class="o">=</span> <span class="s1">&#39;cn={username},ou=edir,ou=people,ou=EXAMPLE-UNIT,o=EXAMPLE&#39;</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="https://github.com/jupyterhub/ldapauthenticator">ldapauthenticator</a> documentation for more information.</p>
+</div>
+<div class="section" id="remote-user-authenticator">
+<h2><a class="toc-backref" href="#id8">Remote User Authenticator</a><a class="headerlink" href="#remote-user-authenticator" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://github.com/cwaldbieser/jhub_remote_user_authenticator">remote user authenticator</a> makes use of the <code class="docutils literal notranslate"><span class="pre">REMOTE_USER</span></code> header for
+authentication. This allows use of JupyterHub with an external authenticating
+proxy (such as <a class="reference external" href="https://knox.apache.org/">Apache Knox</a>).</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the authenticator in JupyterHub&#39;s python environment</span>
+$ pip install jhub_remote_user_authenticator
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">authenticator_class</span> <span class="o">=</span> <span class="s1">&#39;jhub_remote_user_authenticator.remote_user_auth.RemoteUserAuthenticator&#39;</span>
+</pre></div>
+</div>
+<p>For more information see the <a class="reference external" href="https://github.com/cwaldbieser/jhub_remote_user_authenticator">remote user authenticator docs</a>.</p>
 </div>
 </div>
 
