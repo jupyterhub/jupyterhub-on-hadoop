@@ -93,6 +93,8 @@ to allow impersonation of any user or from any host.
 See the `proxy user`_ documentation for more information.
 
 
+.. _create-spawner-keytab:
+
 Enable Kerberos Security (Optional)
 -----------------------------------
 
