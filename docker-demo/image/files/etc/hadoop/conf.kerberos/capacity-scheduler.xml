@@ -1,0 +1,40 @@
+<configuration>
+  <!--
+    The following queue structures is used:
+      - jupyterhub (cap: 50%, max: 100%)
+      - default (cap: 50%, max: 100%)
+  -->
+
+  <property>
+    <name>yarn.scheduler.capacity.root.queues</name>
+    <value>jupyterhub,default</value>
+  </property>
+
+  <property>
+    <name>yarn.scheduler.capacity.maximum-am-resource-percent</name>
+    <value>0.75</value>
+  </property>
+
+  <!-- root.jupyterhub -->
+  <property>
+    <name>yarn.scheduler.capacity.root.jupyterhub.capacity</name>
+    <value>50.0</value>
+  </property>
+
+  <property>
+    <name>yarn.scheduler.capacity.root.jupyterhub.maximum-capacity</name>
+    <value>100.0</value>
+  </property>
+
+  <!-- root.default -->
+  <property>
+    <name>yarn.scheduler.capacity.root.default.capacity</name>
+    <value>50.0</value>
+  </property>
+
+  <property>
+    <name>yarn.scheduler.capacity.root.default.maximum-capacity</name>
+    <value>100.0</value>
+  </property>
+
+</configuration>

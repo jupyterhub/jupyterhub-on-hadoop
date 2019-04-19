@@ -1,0 +1,18 @@
+<configuration>
+
+    <property>
+        <name>hadoop.tmp.dir</name>
+        <value>/var/tmp/</value>
+    </property>
+
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://master.example.com:9000</value>
+    </property>
+
+    <property>
+        <name>hadoop.security.authentication</name>
+        <value>simple</value>
+    </property>
+
+</configuration>

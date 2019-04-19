@@ -1,0 +1,14 @@
+yarn:
+  environment: venv:///opt/jupyterhub/miniconda
+
+  scheduler:
+    vcores: 1
+    memory: 512 MiB
+
+  worker:
+    vcores: 1
+    memory: 512 MiB
+
+distributed:
+  dashboard:
+    link: /user/{JUPYTERHUB_USER}/proxy/{port}/status
