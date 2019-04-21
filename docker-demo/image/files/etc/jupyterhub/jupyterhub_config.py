@@ -1,3 +1,4 @@
+import glob
 import os
 
 # Basic setup
@@ -19,6 +20,18 @@ c.YarnSpawner.keytab = '/etc/jupyterhub/jupyterhub.keytab'
 # Resource limits per-user
 c.YarnSpawner.mem_limit = '2 G'
 c.YarnSpawner.cpu_limit = 1
+
+## Configure environment variables in user notebook sessions
+# Find pyspark modules to add to python path, so they can be used as regular
+# libraries
+pyspark = '/usr/lib/spark/python/'
+py4j = glob.glob(os.path.join(pyspark, 'lib', 'py4j-*.zip'))[0]
+pythonpath = ':'.join([pyspark, py4j])
+c.YarnSpawner.environment = {
+    'PYTHONPATH': pythonpath,
+    'PYSPARK_PYTHON': '/opt/jupyterhub/miniconda/bin/python',
+    'PYSPARK_DRIVER_PYTHON': '/opt/jupyterhub/miniconda/bin/python',
+}
 
 # The YARN queue to use
 c.YarnSpawner.queue = 'jupyterhub'

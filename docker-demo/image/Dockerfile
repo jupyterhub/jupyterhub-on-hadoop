@@ -18,18 +18,12 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
     && pip install supervisor \
     && rm get-pip.py
 
-# The hadoop distro version to build for
-ARG HADOOP_TESTING_VERSION=cdh5
-
 # Install CDH
-ADD cloudera-cdh*.repo /etc/yum.repos.d/
-RUN if [[ "$HADOOP_TESTING_VERSION" == "cdh5" ]]; then \
-        yum-config-manager --disable cloudera-cdh6 \
-        && rpm --import https://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/RPM-GPG-KEY-cloudera; \
-    else \
-        yum-config-manager --disable cloudera-cdh5 \
-        && rpm --import https://archive.cloudera.com/cdh6/6.2.0/redhat7/yum/RPM-GPG-KEY-cloudera; \
-    fi
+# Note: We force remove a couple unnecessary packages to shrink the docker
+# image slightly
+ADD cloudera-cdh6.repo /etc/yum.repos.d/
+RUN yum-config-manager --disable cloudera-cdh5 \
+    && rpm --import https://archive.cloudera.com/cdh6/6.2.0/redhat7/yum/RPM-GPG-KEY-cloudera
 RUN yum install -y \
         hadoop-yarn-resourcemanager \
         hadoop-hdfs-namenode \
@@ -37,8 +31,15 @@ RUN yum install -y \
         hadoop-hdfs-datanode \
         hadoop-client \
         hadoop-libhdfs \
+        spark-core \
+        spark-python \
     && yum clean all \
-    && rm -rf /var/cache/yum
+    && rm -rf /var/cache/yum \
+    && rm -rf /usr/lib/kite \
+    && rm -rf /usr/lib/hive \
+    && rm -rf /usr/lib/solr \
+    && rm -rf /usr/lib/sentry \
+    && rm -rf /usr/lib/flume-ng
 
 # Copy over files
 COPY ./files /
@@ -56,3 +57,5 @@ ENV HADOOP_HOME /usr/lib/hadoop
 ENV HADOOP_COMMON_HOME /usr/lib/hadoop
 ENV HADOOP_YARN_HOME /usr/lib/hadoop-yarn
 ENV HADOOP_HDFS_HOME /usr/lib/hadoop-hdfs
+ENV SPARK_HOME /usr/lib/spark
+ENV JAVA_HOME /usr/lib/jvm/jre

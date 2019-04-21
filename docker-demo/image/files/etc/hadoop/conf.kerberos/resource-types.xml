@@ -1,0 +1,6 @@
+<configuration>
+  <property>
+    <name>yarn.resource-types</name>
+    <value></value>
+  </property>
+</configuration>
