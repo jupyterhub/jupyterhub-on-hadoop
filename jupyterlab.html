@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Use JupyterLab by default &#8212; JupyterHub on Hadoop 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Integration with Dask" href="dask.html" />
+    <link rel="prev" title="Add a Contents Manager" href="contents-managers.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="use-jupyterlab-by-default">
+<h1>Use JupyterLab by default<a class="headerlink" href="#use-jupyterlab-by-default" title="Permalink to this headline">¶</a></h1>
+<p>By default JupyterHub uses the classic <a class="reference external" href="https://jupyter-notebook.readthedocs.io/en/stable/">Notebook</a> frontend. Several alternative
+UIs are supported, one of which is <a class="reference external" href="https://jupyterlab.readthedocs.io/">JupyterLab</a>. This provides a more featured
+UI, with a whole ecosystem of extensions. It looks like this (borrowed from the
+JupyterLab documentation):</p>
+<a class="reference internal image-reference" href="_images/jupyterlab_interface.png"><img alt="JupyterLab's modern UI." class="align-center" src="_images/jupyterlab_interface.png" style="width: 90%;" /></a>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To enable, first install <code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code> in the <a class="reference internal" href="manual-spawner.html#notebook-environments"><span class="std std-ref">notebook environment</span></a> <em>not</em> the JupyterHub environment.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install using conda</span>
+$ conda install -c conda-forge jupyterlab
+
+<span class="c1"># Or install with pip</span>
+$ pip install jupyterlab
+</pre></div>
+</div>
+<p>Next, optionally install the JupyterLab Hub extension into the notebook (not
+the JupyterHub) environment. This isn’t strictly necessary, but adds a
+JupyterHub control panel to the JupyterLab UI allowing easier login/logout.</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ jupyter labextension install @jupyterlab/hub-extension
+</pre></div>
+</div>
+</div></blockquote>
+<p>Finally, configure JupyterHub to start start JupyterLab instead of Jupyter
+Notebook by default on startup.</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start users in JupyterLab by default</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">default_url</span> <span class="o">=</span> <span class="s1">&#39;/lab&#39;</span>
+
+<span class="c1"># Start JupyterLab with the hub extension (only required if you</span>
+<span class="c1"># installed the JupyterLab Hub extension above)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;python -m yarnspawner.jupyter_labhub&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>For more information see the <a class="reference external" href="https://jupyterlab.readthedocs.io/en/stable/user/jupyterhub.html">JupyterLab on JupyterHub</a> and <a class="reference external" href="https://jupyterlab.readthedocs.io/en/stable/user/jupyterhub.html">JupyterLab Hub
+Extension</a> documentation.</p>
+</div>
+<div class="section" id="useful-extensions">
+<h2>Useful Extensions<a class="headerlink" href="#useful-extensions" title="Permalink to this headline">¶</a></h2>
+<p>JupyterLab has a whole ecsystem of useful extensions. As above, extensions
+must be installed in the <em>notebook</em> environment to properly work. Below we
+list a few that may be useful.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/dask/dask-labextension/">Dask Extension</a></p></li>
+<li><p><a class="reference external" href="https://ipywidgets.readthedocs.io/en/stable/user_install.html#installing-the-jupyterlab-extension">Interactive Widgets Extension</a></p></li>
+<li><p><a class="reference external" href="https://github.com/jupyterlab/jupyterlab-git">Git Extension</a></p></li>
+<li><p><a class="reference external" href="https://github.com/jupyterlab/jupyterlab-github">GitHub Extension</a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">JupyterHub on Hadoop</a></h1>
+
+
+
+<p class="blurb">Documentation for deploying JupyterHub on a Hadoop Cluster</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=jcrist&repo=jupyterhub-on-hadoop&type=watch&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/jcrist/jupyterhub-on-hadoop">
+    <img
+        alt="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+        src="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="customization.html">Customization</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="enable-https.html">Enable HTTPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contents-managers.html">Add a Contents Manager</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Use JupyterLab by default</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#useful-extensions">Useful Extensions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dask.html">Integration with Dask</a></li>
+</ul>
+</li>
+</ul>
+
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in the <a href="https://github.com/jcrist/jupyterhub-on-hadoop/issues">issue tracker</a>.
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jim Crist.
+      
+      |
+      <a href="_sources/jupyterlab.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

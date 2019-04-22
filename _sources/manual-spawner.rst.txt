@@ -130,6 +130,8 @@ following line to your ``jupyterhub_config.py``:
     c.YarnSpawner.keytab = '/etc/jupyterhub/jupyterhub.keytab'
 
 
+.. _notebook-environments:
+
 Specifying Python Environments
 ------------------------------
 
@@ -168,6 +170,8 @@ few different ways:
     # Activate a virtual environment before startup
     c.YarnSpawner.prologue = 'source /path/to/your/environment/bin/activate'
 
+
+.. _archived-environments:
 
 Using an Archived Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

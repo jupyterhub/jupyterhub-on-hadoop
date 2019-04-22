@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Enable HTTPS &#8212; JupyterHub on Hadoop 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Add a Contents Manager" href="contents-managers.html" />
+    <link rel="prev" title="Customization" href="customization.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="enable-https">
+<h1>Enable HTTPS<a class="headerlink" href="#enable-https" title="Permalink to this headline">¶</a></h1>
+<p>While JupyterHub runs fine with just HTTP, we highly recommend enabling SSL
+encryption (HTTPS). You can either have JupyterHub handle its own SSL
+termination, or run JupyterHub behind a proxy and handle SSL termination
+externally. For more information, see the <a class="reference external" href="https://jupyterhub.readthedocs.io/en/stable/getting-started/security-basics.html#enabling-ssl-encryption">JupyterHub documentation</a>.</p>
+<div class="section" id="handling-ssl-termination-in-jupyterhub">
+<h2>Handling SSL termination in JupyterHub<a class="headerlink" href="#handling-ssl-termination-in-jupyterhub" title="Permalink to this headline">¶</a></h2>
+<p>If you have your own SSL certificates you can have JupyterHub handle SSL
+termination itself. To do so, you need to specify their locations in your
+<code class="docutils literal notranslate"><span class="pre">jupyterhub_config.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">ssl_cert</span> <span class="o">=</span> <span class="s1">&#39;/path/to/your.cert&#39;</span>
+<span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">ssl_key</span> <span class="o">=</span> <span class="s1">&#39;/path/to/your.key&#39;</span>
+</pre></div>
+</div>
+<p>If your cert file also contains the key (which is sometimes true), you can omit
+setting <code class="docutils literal notranslate"><span class="pre">ssl_key</span></code>.</p>
+<p>You’ll also need to change any configuration fields that you set to use
+<code class="docutils literal notranslate"><span class="pre">http</span></code> to <code class="docutils literal notranslate"><span class="pre">https</span></code> (typically this is just <code class="docutils literal notranslate"><span class="pre">bind_url</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">JupyterHub</span><span class="o">.</span><span class="n">bind_url</span> <span class="o">=</span> <span class="s1">&#39;https://:&lt;PORT-TO-USE&gt;&#39;</span>
+</pre></div>
+</div>
+<p>Just as with kerberos keytabs, it is important to put
+these files in a secure location on your server where they are not readable by
+regular users. In the absence of a better location, we recommend
+<code class="docutils literal notranslate"><span class="pre">/etc/jupyterhub/</span></code>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mv mycert.cert /etc/jupyterhub/jupyterhub.cert
+$ mv mykey.key /etc/jupyterhub/jupyterhub.key
+$ chmod <span class="m">400</span> /etc/jupyterhub/jupyterhub.cert /etc/jupyterhub/jupyterhub.key
+$ chown jupyterhub /etc/jupyterhub/jupyterhub.cert /etc/jupyterhub/jupyterhub.key
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-external-ssl-termination">
+<h2>Using external SSL termination<a class="headerlink" href="#using-external-ssl-termination" title="Permalink to this headline">¶</a></h2>
+<p>If JupyterHub is running behind a reverse proxy that already handles SSL
+termination (NGINX, etc…), you can omit configuring <code class="docutils literal notranslate"><span class="pre">ssl_cert</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ssl_key</span></code>. No further steps are necessary.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">JupyterHub on Hadoop</a></h1>
+
+
+
+<p class="blurb">Documentation for deploying JupyterHub on a Hadoop Cluster</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=jcrist&repo=jupyterhub-on-hadoop&type=watch&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/jcrist/jupyterhub-on-hadoop">
+    <img
+        alt="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+        src="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="customization.html">Customization</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Enable HTTPS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#handling-ssl-termination-in-jupyterhub">Handling SSL termination in JupyterHub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-external-ssl-termination">Using external SSL termination</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="contents-managers.html">Add a Contents Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jupyterlab.html">Use JupyterLab by default</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dask.html">Integration with Dask</a></li>
+</ul>
+</li>
+</ul>
+
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in the <a href="https://github.com/jcrist/jupyterhub-on-hadoop/issues">issue tracker</a>.
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jim Crist.
+      
+      |
+      <a href="_sources/enable-https.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

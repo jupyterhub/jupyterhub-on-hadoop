@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Integration with Dask &#8212; JupyterHub on Hadoop 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Use JupyterLab by default" href="jupyterlab.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="integration-with-dask">
+<h1>Integration with Dask<a class="headerlink" href="#integration-with-dask" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://dask.org/">Dask</a> is a powerful and flexible tool for scaling Python analytics across a
+cluster. Dask works out-of-the-box with JupyterHub, but there are several
+things you can configure to make the experience nicer.</p>
+<div class="section" id="install-dependencies">
+<h2>Install Dependencies<a class="headerlink" href="#install-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>To run Dask on Hadoop you’ll need to install <a class="reference external" href="https://yarn.dask.org">dask-yarn</a> in the <a class="reference internal" href="manual-spawner.html#notebook-environments"><span class="std std-ref">notebook
+environment</span></a>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install with conda</span>
+$ conda install -c conda-forge dask-yarn
+
+<span class="c1"># Or install with pip</span>
+$ pip install dask-yarn
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-optional-dependencies">
+<h2>Install Optional Dependencies<a class="headerlink" href="#install-optional-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>For a nicer UI experience and access to the <a class="reference external" href="https://docs.dask.org/en/latest/diagnostics-distributed.html#dashboard">Dask Dashboard</a>, you’ll also want
+to install <a class="reference external" href="https://jupyter-server-proxy.readthedocs.io/">jupyter-server-proxy</a> and <a class="reference external" href="https://ipywidgets.readthedocs.io/">ipywidgets</a> in the <a class="reference internal" href="manual-spawner.html#notebook-environments"><span class="std std-ref">notebook
+environment</span></a>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install with conda</span>
+$ conda install -c conda-forge jupyter-server-proxy ipywidgets
+
+<span class="c1">#  Or install with pip</span>
+$ pip install jupyter-server-proxy ipywidgets
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>While Dask will work as long as <code class="docutils literal notranslate"><span class="pre">dask-yarn</span></code> is installed, as an administrator
+you can preconfigure a few default fields to make things easier for your users.</p>
+<p>Dask’s default configuration is collected from the following locations (earlier
+sources taking precedence):</p>
+<ul class="simple">
+<li><p>Environment variables like <code class="docutils literal notranslate"><span class="pre">DASK_YARN__ENVIRONMENT</span></code></p></li>
+<li><p>YAML files found in <code class="docutils literal notranslate"><span class="pre">$DASK_CONFIG</span></code> (defaults to <code class="docutils literal notranslate"><span class="pre">~/.config/dask/</span></code>)</p></li>
+<li><p>YAML files found in <code class="docutils literal notranslate"><span class="pre">&lt;ENV&gt;/etc/dask</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;ENV&gt;</span></code> is a user’s
+Conda/Virtual environment</p></li>
+<li><p>YAML files found in the system <code class="docutils literal notranslate"><span class="pre">/etc/dask/</span></code> directory</p></li>
+<li><p>Default settings within the various dask libraries</p></li>
+</ul>
+<p>As such, you have a few options for how to pass configuration on to your users.
+If you’re using <a class="reference internal" href="manual-spawner.html#archived-environments"><span class="std std-ref">archived notebook environments</span></a>,
+a good option is to put configuration in <code class="docutils literal notranslate"><span class="pre">&lt;ENV&gt;/etc/dask/config.yaml</span></code> (where
+<code class="docutils literal notranslate"><span class="pre">&lt;ENV&gt;</span></code> is the top-directory of the environment). This allows having
+different configuration settings for different environemnts. These can also be
+combined with environment variables set via <code class="docutils literal notranslate"><span class="pre">YarnSpawner.environment</span></code> (useful
+for things determined at runtime, or overrides for the static config files).</p>
+<p>Below we provide an example configuration file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">yarn</span><span class="p">:</span>
+  <span class="c1"># Specify the default Python environment to use for the workers.</span>
+  <span class="c1"># In most cases this should be the same as the environment used for the</span>
+  <span class="c1"># user&#39;s notebook server.</span>
+  <span class="c1"># Here we use an archived environment stored on hdfs</span>
+  <span class="nt">environment</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hdfs:///jupyterhub/example.tar.gz&#39;,</span>
+
+  <span class="c1"># To instead specify an environment already on every node, use</span>
+  <span class="c1"># environment: local:///path/to/environment</span>
+
+  <span class="c1"># The YARN queue to submit applications to by default</span>
+  <span class="nt">queue</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dask</span>
+
+  <span class="c1"># Configure the default worker vcores and memory</span>
+  <span class="c1"># These can be overridden by the user as needed</span>
+  <span class="nt">worker</span><span class="p">:</span>
+    <span class="nt">vcores</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+    <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2 GiB</span>
+
+  <span class="c1"># Use `local` deploy mode. This runs the scheduler in the same container</span>
+  <span class="c1"># as the notebook, and allows for viewing the dashboard using</span>
+  <span class="c1"># jupyter-server-proxy.</span>
+  <span class="nt">deploy-mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">local</span>
+
+<span class="nt">distributed</span><span class="p">:</span>
+  <span class="nt">dashboard</span><span class="p">:</span>
+    <span class="c1"># Configure the link template for the dask dashboard. This updates the</span>
+    <span class="c1"># dashboard links to proxy through jupyter-server-proxy</span>
+    <span class="nt">link</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/user/{JUPYTERHUB_USER}/proxy/{port}/status</span>
+</pre></div>
+</div>
+<p>The above are likely parameters you’ll want to set, but Dask has many more
+configuration options. For more information see the <a class="reference external" href="https://docs.dask.org/en/latest/configuration.html">Dask configuration
+documentation</a>.</p>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Given a fully configured system, users should be able to create a Dask Cluster
+as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dask_yarn</span>
+<span class="n">cluster</span> <span class="o">=</span> <span class="n">dask_yarn</span><span class="o">.</span><span class="n">YarnCluster</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Default parameters can be overridden by specifying them at runtime:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dask_yarn</span>
+<span class="c1"># Use different worker resources than the default</span>
+<span class="n">cluster</span> <span class="o">=</span> <span class="n">dask_yarn</span><span class="o">.</span><span class="n">YarnCluster</span><span class="p">(</span>
+    <span class="n">worker_vcores</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">worker_memory</span><span class="o">=</span><span class="s1">&#39;4 GiB&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Users can then connect to their cluster and start doing work:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dask.distributed</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span>
+
+<span class="c1"># Start doing computations</span>
+<span class="kn">import</span> <span class="nn">dask.dataframe</span> <span class="kn">as</span> <span class="nn">dd</span>
+<span class="n">ddf</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;hdfs:///path/to/my/data.parquet&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Clusters can be scaled dynamically at runtime:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scale up to 10 workers</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Scale down to 4 workers</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you installed <code class="docutils literal notranslate"><span class="pre">jupyter-server-proxy</span></code> and <code class="docutils literal notranslate"><span class="pre">ipywidgets</span></code> you’ll also get a
+nice UI for interacting with the cluster:</p>
+<a class="reference internal image-reference" href="_images/dask-usage.gif"><img alt="Interactive usage of Dask" class="align-center" src="_images/dask-usage.gif" style="width: 90%;" /></a>
+<p>Clusters can be shutdown manually, or will be automatically shutdown on
+notebook exit.</p>
+</div>
+<div class="section" id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<p>Dask integrates well with the extensive Python datascience ecosystem. For more
+information please see the following resources:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://dask.org/">Dask documentation</a></p></li>
+<li><p><a class="reference external" href="https://yarn.dask.org">Dask on YARN</a></p></li>
+<li><p><a class="reference external" href="https://examples.dask.org/">Dask Examples</a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">JupyterHub on Hadoop</a></h1>
+
+
+
+<p class="blurb">Documentation for deploying JupyterHub on a Hadoop Cluster</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=jcrist&repo=jupyterhub-on-hadoop&type=watch&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/jcrist/jupyterhub-on-hadoop">
+    <img
+        alt="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+        src="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="customization.html">Customization</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="enable-https.html">Enable HTTPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contents-managers.html">Add a Contents Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jupyterlab.html">Use JupyterLab by default</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Integration with Dask</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-dependencies">Install Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-optional-dependencies">Install Optional Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#further-reading">Further Reading</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in the <a href="https://github.com/jcrist/jupyterhub-on-hadoop/issues">issue tracker</a>.
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jim Crist.
+      
+      |
+      <a href="_sources/dask.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

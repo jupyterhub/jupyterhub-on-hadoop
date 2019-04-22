@@ -14,7 +14,7 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Manual Installation" href="manual-installation.html" />
+    <link rel="next" title="Installation" href="installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -62,17 +62,27 @@ should be sufficient), as user’s notebooks (where the actual work is being don
 are distributed throughout the Hadoop cluster reducing the load on any single
 node.</p>
 </div>
-<div class="section" id="installation-options">
-<h2>Installation Options<a class="headerlink" href="#installation-options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>As cluster management practices differ, we hope to provide several options for
+installation. Currently only a manual installation tutorial is provided - if
+you’re interested in providing alternative options (<a class="reference external" href="https://github.com/jcrist/jupyterhub-on-hadoop/issues/1">Cloudera Parcel</a>, etc…)
+please <a class="reference external" href="https://github.com/jcrist/jupyterhub-on-hadoop/">get in touch on github</a>.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="manual-installation.html"><span class="doc">Manual Installation</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="customization">
+<h2>Customization<a class="headerlink" href="#customization" title="Permalink to this headline">¶</a></h2>
+<p>Once basic installation is complete, there are several options for additional
+customization.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="enable-https.html"><span class="doc">Enable HTTPS</span></a></p></li>
+<li><p><a class="reference internal" href="contents-managers.html"><span class="doc">Add a Contents Manager</span></a></p></li>
+<li><p><a class="reference internal" href="jupyterlab.html"><span class="doc">Use JupyterLab by default</span></a></p></li>
+<li><p><a class="reference internal" href="dask.html"><span class="doc">Integration with Dask</span></a></p></li>
+</ul>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="manual-installation.html">Manual Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="manual-setup.html">Install &amp; Setup Basic JupyterHub</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manual-spawner.html">Configure YarnSpawner</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manual-authentication.html">Add Authentication</a></li>
-</ul>
-</li>
-</ul>
 </div>
 </div>
 </div>
@@ -116,7 +126,8 @@ node.</p>
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="manual-installation.html">Manual Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customization.html">Customization</a></li>
 </ul>
 
 <h3>Need help?</h3>

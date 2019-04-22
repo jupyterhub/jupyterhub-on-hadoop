@@ -1,0 +1,6 @@
+Installation
+============
+
+.. toctree::
+
+    manual-installation

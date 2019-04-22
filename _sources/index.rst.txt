@@ -40,13 +40,34 @@ are distributed throughout the Hadoop cluster reducing the load on any single
 node.
 
 
-Installation Options
---------------------
+Installation
+------------
+
+As cluster management practices differ, we hope to provide several options for
+installation. Currently only a manual installation tutorial is provided - if
+you're interested in providing alternative options (`Cloudera Parcel`_, etc...)
+please `get in touch on github`_.
+
+- :doc:`manual-installation`
+
+
+Customization
+-------------
+
+Once basic installation is complete, there are several options for additional
+customization.
+
+- :doc:`enable-https`
+- :doc:`contents-managers`
+- :doc:`jupyterlab`
+- :doc:`dask`
+
 
 .. toctree::
-    :titlesonly:
+    :hidden:
 
-    manual-installation
+    installation
+    customization
 
 
 .. _JupyterHub: https://jupyterhub.readthedocs.io/
@@ -54,3 +75,5 @@ Installation Options
 .. _Zero-to-JupyterHub-Kubernetes: https://zero-to-jupyterhub.readthedocs.io/
 .. _Hadoop Cluster: https://hadoop.apache.org/
 .. _create an issue on github: https://github.com/jcrist/jupyterhub-on-hadoop/issues
+.. _Cloudera Parcel: https://github.com/jcrist/jupyterhub-on-hadoop/issues/1
+.. _get in touch on github: https://github.com/jcrist/jupyterhub-on-hadoop/

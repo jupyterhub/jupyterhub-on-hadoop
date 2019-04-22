@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Customization &#8212; JupyterHub on Hadoop 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Enable HTTPS" href="enable-https.html" />
+    <link rel="prev" title="Add Authentication" href="manual-authentication.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="customization">
+<h1>Customization<a class="headerlink" href="#customization" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="enable-https.html">Enable HTTPS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="enable-https.html#handling-ssl-termination-in-jupyterhub">Handling SSL termination in JupyterHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enable-https.html#using-external-ssl-termination">Using external SSL termination</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contents-managers.html">Add a Contents Manager</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contents-managers.html#storing-notebooks-on-hdfs">Storing Notebooks on HDFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contents-managers.html#other-options">Other Options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jupyterlab.html">Use JupyterLab by default</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jupyterlab.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jupyterlab.html#useful-extensions">Useful Extensions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dask.html">Integration with Dask</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dask.html#install-dependencies">Install Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dask.html#install-optional-dependencies">Install Optional Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dask.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dask.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dask.html#further-reading">Further Reading</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">JupyterHub on Hadoop</a></h1>
+
+
+
+<p class="blurb">Documentation for deploying JupyterHub on a Hadoop Cluster</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=jcrist&repo=jupyterhub-on-hadoop&type=watch&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/jcrist/jupyterhub-on-hadoop">
+    <img
+        alt="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+        src="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Customization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="enable-https.html">Enable HTTPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contents-managers.html">Add a Contents Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jupyterlab.html">Use JupyterLab by default</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dask.html">Integration with Dask</a></li>
+</ul>
+</li>
+</ul>
+
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in the <a href="https://github.com/jcrist/jupyterhub-on-hadoop/issues">issue tracker</a>.
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jim Crist.
+      
+      |
+      <a href="_sources/customization.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
