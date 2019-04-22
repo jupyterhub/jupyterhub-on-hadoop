@@ -6,7 +6,7 @@ set -ex
 useradd -m alice
 useradd -m bob
 useradd -m carl
-useradd -m jupyterhub
+useradd -M jupyterhub
 
 # Copy around default log4j.properties file
 ln -s /etc/hadoop/conf.empty/log4j.properties /etc/hadoop/conf.temp/log4j.properties \

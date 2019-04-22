@@ -43,6 +43,9 @@ conda install -c conda-forge \
     numpy==1.16.2 \
     nomkl
 
+# Patch out no HTTPS warning in login script to give prettier demos.
+sed -i '/^<script>/,/^<\/script>/d' /opt/jupyterhub/miniconda/share/jupyterhub/templates/login.html
+
 # Remove any unused packages
 conda clean  -a
 
