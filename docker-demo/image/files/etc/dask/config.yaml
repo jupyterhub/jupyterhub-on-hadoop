@@ -1,6 +1,8 @@
 yarn:
   environment: venv:///opt/jupyterhub/miniconda
 
+  deploy-mode: local
+
   scheduler:
     vcores: 1
     memory: 512 MiB

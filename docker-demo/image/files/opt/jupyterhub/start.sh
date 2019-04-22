@@ -2,4 +2,4 @@
 
 export PATH="/opt/jupyterhub/miniconda/bin:$PATH"
 cd /var/jupyterhub
-jupyterhub -f /etc/jupyterhub/jupyterhub_config.py
+exec jupyterhub -f /etc/jupyterhub/jupyterhub_config.py
