@@ -7,3 +7,4 @@ Customization
     contents-managers
     jupyterlab
     dask
+    spark

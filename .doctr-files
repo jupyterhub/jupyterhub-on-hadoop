@@ -13,6 +13,7 @@
 ./_sources/manual-installation.rst.txt
 ./_sources/manual-setup.rst.txt
 ./_sources/manual-spawner.rst.txt
+./_sources/spark.rst.txt
 ./_static/alabaster.css
 ./_static/basic.css
 ./_static/custom.css
@@ -43,3 +44,4 @@
 ./objects.inv
 ./search.html
 ./searchindex.js
+./spark.html

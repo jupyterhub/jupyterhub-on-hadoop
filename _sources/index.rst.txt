@@ -61,6 +61,7 @@ customization.
 - :doc:`contents-managers`
 - :doc:`jupyterlab`
 - :doc:`dask`
+- :doc:`spark`
 
 
 .. toctree::

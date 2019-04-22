@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Integration with Spark &#8212; JupyterHub on Hadoop 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Integration with Dask" href="dask.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="integration-with-spark">
+<h1>Integration with Spark<a class="headerlink" href="#integration-with-spark" title="Permalink to this headline">¶</a></h1>
+<p>By using JupyterHub, users get secure access to a container running inside the
+Hadoop cluster, which means they can interact with Spark <em>directly</em> (instead of
+by proxy with Livy). This is both simpler and faster, as results don’t need to
+be serialized through Livy.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Spark must be installed on your cluster before use. Follow the installation
+guidelines from your distribution, or refer to the <a class="reference external" href="https://spark.apache.org/docs/latest/running-on-yarn.html#preparations">Spark-on-Yarn
+documentation</a>.</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://spark.apache.org/docs/2.3.1/api/python/index.html">PySpark</a> isn’t installed like a normal Python library, rather it’s packaged
+separately and needs to be added to the <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> to be importable. This
+can be done by configuring <code class="docutils literal notranslate"><span class="pre">jupyterhub_config.py</span></code> to find the required
+libraries and set <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> in the user’s notebook environment. You’ll
+also want to set <code class="docutils literal notranslate"><span class="pre">PYSPARK_PYTHON</span></code> to the same Python path that the notebook
+environment is running in.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="c1"># Find pyspark modules to add to PYTHONPATH, so they can be used as regular</span>
+<span class="c1"># libraries</span>
+<span class="n">pyspark</span> <span class="o">=</span> <span class="s1">&#39;/usr/lib/spark/python/&#39;</span>
+<span class="n">py4j</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pyspark</span><span class="p">,</span> <span class="s1">&#39;lib&#39;</span><span class="p">,</span> <span class="s1">&#39;py4j-*.zip&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">pythonpath</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">pyspark</span><span class="p">,</span> <span class="n">py4j</span><span class="p">])</span>
+
+<span class="c1"># Set PYTHONPATH and PYSPARK_PYTHON in the user&#39;s notebook environment</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">environment</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;PYTHONPATH&#39;</span><span class="p">:</span> <span class="n">pythonpath</span><span class="p">,</span>
+    <span class="s1">&#39;PYSPARK_PYTHON&#39;</span><span class="p">:</span> <span class="s1">&#39;/opt/jupyterhub/miniconda/bin/python&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If you’re using an <cite>archived notebook environment &lt;archived-environments&gt;</cite>, you
+may instead want to bundle a <code class="docutils literal notranslate"><span class="pre">spark</span></code> config directory in the archive, and set
+the <code class="docutils literal notranslate"><span class="pre">SPARK_CONF_DIR</span></code> to the extracted path. This allows you to specify the
+path to the same archive in the config, so your users don’t have to themselves.
+This might look like:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># A custom spark-defaults.conf
+# Stored at `&lt;ENV&gt;/etc/spark/spark-defaults.conf`, where `&lt;ENV&gt;` is the top
+# directory of the unarchived Conda/virtual environment.
+
+# Common configuration
+spark.master yarn
+spark.submit.deployMode client
+spark.yarn.queue myqueue
+
+# If the spark jars are already on every node, avoid serializing them
+spark.yarn.jars local:/usr/lib/spark/jars/*
+
+# Path to the archived Python environment
+spark.yarn.dist.archives hdfs:///jupyterhub/example.tar.gz#environment
+
+# Pyspark configuration
+spark.pyspark.python ./environment/bin/python
+spark.pyspark.driver.python ./environment/bin/python
+</pre></div>
+</div>
+<p>And the <code class="docutils literal notranslate"><span class="pre">jupyterhub_config.py</span></code> file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add PySpark to PYTHONPATH, same as above</span>
+<span class="c1"># ...</span>
+
+<span class="c1"># Set PYTHONPATH and SPARK_CONF_DIR in the user&#39;s notebook environment</span>
+<span class="n">c</span><span class="o">.</span><span class="n">YarnSpawner</span><span class="o">.</span><span class="n">environment</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;PYTHONPATH&#39;</span><span class="p">:</span> <span class="n">pythonpath</span><span class="p">,</span>
+    <span class="s1">&#39;SPARK_CONF_DIR&#39;</span><span class="p">:</span> <span class="s1">&#39;./environment/etc/spark&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Given configuration like above, users may not need to enter any parameters when
+creating a <code class="docutils literal notranslate"><span class="pre">SparkContext</span></code> - the default values may already be sufficiently
+set:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyspark</span>
+
+<span class="c1"># Create a spark context from the defaults set in configuration</span>
+<span class="n">sc</span> <span class="o">=</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">SparkContext</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Of course, overrides can always be provided at runtime if needed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyspark</span>
+
+<span class="n">conf</span> <span class="o">=</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">SparkConf</span><span class="p">()</span>
+
+<span class="c1"># Override a few default parameters</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;spark.executor.memory&#39;</span><span class="p">,</span> <span class="s1">&#39;512m&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;spark.executor.instances&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Create a spark context with the overrides</span>
+<span class="n">sc</span> <span class="o">=</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">SparkContext</span><span class="p">(</span><span class="n">conf</span><span class="o">=</span><span class="n">conf</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If all nodes are configured to use the same Python path/archive, then all
+dependencies should be available on all workers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">some_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="c1"># Libraries are imported and available from the same environment as the</span>
+    <span class="c1"># notebook</span>
+    <span class="kn">import</span> <span class="nn">sklearn</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+    <span class="c1"># Use the libraries to do work</span>
+    <span class="k">return</span> <span class="o">...</span>
+
+
+<span class="n">rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">some_function</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When you’re done, the Spark clusters can be shutdown manually, or will be
+automatically shutdown when the notebook exits.</p>
+</div>
+<div class="section" id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<p>There are additional Jupyter and Spark integrations that may be useful for your
+installation. Please refer to their documentation for more information:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://krishnan-r.github.io/sparkmonitor/">sparkmonitor</a>: Realtime monitoring of Spark applications from inside the notebook</p></li>
+<li><p><a class="reference external" href="https://github.com/mozilla/jupyter-spark">jupyter-spark</a>: Simpler progress indicators for running Spark jobs</p></li>
+</ul>
+<p>Additionally, you may find the following resources useful:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://conda.github.io/conda-pack/spark.html">Using conda environments with Spark</a></p></li>
+<li><p><a class="reference external" href="https://jcrist.github.io/venv-pack/spark.html">Using virtual environments with Spark</a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">JupyterHub on Hadoop</a></h1>
+
+
+
+<p class="blurb">Documentation for deploying JupyterHub on a Hadoop Cluster</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=jcrist&repo=jupyterhub-on-hadoop&type=watch&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/jcrist/jupyterhub-on-hadoop">
+    <img
+        alt="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+        src="https://secure.travis-ci.org/jcrist/jupyterhub-on-hadoop.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="customization.html">Customization</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="enable-https.html">Enable HTTPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contents-managers.html">Add a Contents Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jupyterlab.html">Use JupyterLab by default</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dask.html">Integration with Dask</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Integration with Spark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#further-reading">Further Reading</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<h3>Need help?</h3>
+
+<p>
+  Open an issue in the <a href="https://github.com/jcrist/jupyterhub-on-hadoop/issues">issue tracker</a>.
+</p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jim Crist.
+      
+      |
+      <a href="_sources/spark.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
