@@ -34,6 +34,7 @@ conda install -c conda-forge \
     jupyter-server-proxy \
     tornado==5.1.1 \
     notebook \
+    jupyterlab \
     ipywidgets \
     pykerberos \
     dask-yarn \
