@@ -1,5 +1,5 @@
-Enabling HTTPS
-==============
+Enable HTTPS
+============
 
 While JupyterHub runs fine with just HTTP, we highly recommend enabling SSL
 encryption (HTTPS). You can either have JupyterHub handle its own SSL

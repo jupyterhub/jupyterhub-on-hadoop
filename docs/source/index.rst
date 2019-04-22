@@ -58,6 +58,7 @@ Once basic installation is complete, there are several options for additional
 customization.
 
 - :doc:`enable-https`
+- :doc:`contents-managers`
 
 
 .. toctree::

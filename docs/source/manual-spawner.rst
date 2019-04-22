@@ -130,6 +130,8 @@ following line to your ``jupyterhub_config.py``:
     c.YarnSpawner.keytab = '/etc/jupyterhub/jupyterhub.keytab'
 
 
+.. _notebook-environments:
+
 Specifying Python Environments
 ------------------------------
 
