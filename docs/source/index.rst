@@ -59,6 +59,8 @@ customization.
 
 - :doc:`enable-https`
 - :doc:`contents-managers`
+- :doc:`jupyterlab`
+- :doc:`dask`
 
 
 .. toctree::

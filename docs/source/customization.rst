@@ -6,3 +6,4 @@ Customization
     enable-https
     contents-managers
     jupyterlab
+    dask

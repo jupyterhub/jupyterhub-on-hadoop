@@ -171,6 +171,8 @@ few different ways:
     c.YarnSpawner.prologue = 'source /path/to/your/environment/bin/activate'
 
 
+.. _archived-environments:
+
 Using an Archived Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
