@@ -86,7 +86,8 @@ running to see if everything works. JupyterHub configuration is written as a
 Python file (typically ``/etc/jupyterhub/jupyterhub_config.py``). Here we'll
 configure only a few fields:
 
-- ``JupyterHub.bind_url``: the complete address that JupyterHub will server at.
+- ``JupyterHub.bind_url``: the public facing URL of the whole JupyterHub
+  application.
 
 - ``JupyterHub.db_url``: the address that the JupyterHub database can be
   reached at. JupyterHub supports many databases - for now we'll use sqlite.
