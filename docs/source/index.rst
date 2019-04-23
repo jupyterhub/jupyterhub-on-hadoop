@@ -14,6 +14,34 @@ incorrect, or have any questions/comments, feel free to `create an issue on
 github`_.
 
 
+Why JupyterHub?
+---------------
+
+JupyterHub is not the only option for providing users a notebook environment
+with Hadoop integration, but we believe this setup has some benefits over other
+options.
+
+- **Familiar**: JupyterHub provides the same Jupyter_ interface users know and
+  love. It integrates well with the existing Data Science ecosystem, and is
+  used extensively in both the private and public sector.
+
+- **Extensible**: JupyterHub is open source and community supported, and has a
+  large ecosystem of plugins. It can support `dozens of languages`_ (Python, R,
+  Julia, Scala...), and user interfaces (Jupyter Notebooks, JupyterLab,
+  RStudio...).
+
+- **Scalable**: With JupyterHub, each user gets their own environment running
+  in their own private container. This reduces the load on a single node, and
+  allows resource usage to scale dynamically with the number of users. For
+  large data, tools such as Spark_ and Dask_ work natively with no additional
+  overhead.
+
+- **Portable**: JupyterHub is flexible and isn't bound to a single cluster
+  manager. It runs great on clusters (Kubernetes, Hadoop, HPC...) as well
+  as single machines. This means that if you change your infrastructure in the
+  future you can still keep using JupyterHub.
+
+
 Overview
 --------
 
@@ -45,8 +73,8 @@ Installation
 
 As cluster management practices differ, we hope to provide several options for
 installation. Currently only a manual installation tutorial is provided - if
-you're interested in providing alternative options (`Cloudera Parcel`_, etc...)
-please `get in touch on github`_.
+you're interested in providing alternative options (`Cloudera Parcels`_,
+RPMs_...) please `get in touch on github`_.
 
 - :doc:`manual-installation`
 
@@ -72,9 +100,14 @@ customization.
 
 
 .. _JupyterHub: https://jupyterhub.readthedocs.io/
+.. _Jupyter:
 .. _notebook: https://jupyter.org/
 .. _Zero-to-JupyterHub-Kubernetes: https://zero-to-jupyterhub.readthedocs.io/
 .. _Hadoop Cluster: https://hadoop.apache.org/
 .. _create an issue on github: https://github.com/jcrist/jupyterhub-on-hadoop/issues
-.. _Cloudera Parcel: https://github.com/jcrist/jupyterhub-on-hadoop/issues/1
+.. _dozens of languages: https://github.com/jupyter/jupyter/wiki/Jupyter-kernels
+.. _Dask: https://dask.org/
+.. _Spark: https://spark.apache.org/
+.. _Cloudera Parcels: https://github.com/jcrist/jupyterhub-on-hadoop/issues/1
+.. _RPMs: https://github.com/jcrist/jupyterhub-on-hadoop/issues/8
 .. _get in touch on github: https://github.com/jcrist/jupyterhub-on-hadoop/
