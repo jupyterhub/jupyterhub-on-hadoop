@@ -22,9 +22,8 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
 # Note: We force remove a couple unnecessary packages to shrink the docker
 # image slightly
 ADD cloudera-cdh6.repo /etc/yum.repos.d/
-RUN yum-config-manager --disable cloudera-cdh5 \
-    && rpm --import https://archive.cloudera.com/cdh6/6.2.0/redhat7/yum/RPM-GPG-KEY-cloudera
-RUN yum install -y \
+RUN rpm --import https://archive.cloudera.com/cdh6/6.2.0/redhat7/yum/RPM-GPG-KEY-cloudera \
+    && yum install -y \
         hadoop-yarn-resourcemanager \
         hadoop-hdfs-namenode \
         hadoop-yarn-nodemanager \

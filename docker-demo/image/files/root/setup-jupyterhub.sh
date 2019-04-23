@@ -47,9 +47,17 @@ conda install -c conda-forge \
 # Patch out no HTTPS warning in login script to give prettier demos.
 sed -i '/^<script>/,/^<\/script>/d' /opt/jupyterhub/miniconda/share/jupyterhub/templates/login.html
 
-# Remove any unused packages
-conda clean  -a
-
 # Extra packages that aren't on conda-forge
 pip install jupyterhub-kerberosauthenticator --no-deps
 pip install jupyterhub-dummyauthenticator --no-deps
+
+# Remove any unused packages
+conda clean  -a
+
+# Remove optional files to minimize layer size of the docker image
+find /opt/jupyterhub/miniconda/ -type f -name '*.a' -delete
+find /opt/jupyterhub/miniconda/ -type f -name '*.js.map' -delete
+find /opt/jupyterhub/miniconda/ -type f -name '*.pyc' -delete
+rm -rf /opt/jupyterhub/miniconda/pkgs
+# Strip shared libraries in case they weren't already
+find /opt/jupyterhub/miniconda/ -type f -name '*.so' -exec strip --strip-all {} + || true
