@@ -113,7 +113,8 @@ running to see if everything works. JupyterHub configuration is written as a
 Python file (typically <code class="docutils literal notranslate"><span class="pre">/etc/jupyterhub/jupyterhub_config.py</span></code>). Here we’ll
 configure only a few fields:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">JupyterHub.bind_url</span></code>: the complete address that JupyterHub will server at.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">JupyterHub.bind_url</span></code>: the public facing URL of the whole JupyterHub
+application.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">JupyterHub.db_url</span></code>: the address that the JupyterHub database can be
 reached at. JupyterHub supports many databases - for now we’ll use sqlite.
 For information on using a different database see <a class="reference external" href="https://jupyterhub.readthedocs.io/en/stable/reference/database.html">the JupyterHub docs</a>.</p></li>

@@ -11,7 +11,7 @@ scripts, etc...) and not large files (datasets, etc...).*
 Storing Notebooks on HDFS
 -------------------------
 
-Notebooks can be persisted to HDFS usint the `jupyter-hdfscm`_ package.
+Notebooks can be persisted to HDFS using the `jupyter-hdfscm`_ package.
 
 To enable, first install ``jupyter-hdfscm`` in the :ref:`notebook environment
 <notebook-environments>` *not* the JupyterHub environment.

@@ -42,6 +42,30 @@ up your own JupyterHub on an existing <a class="reference external" href="https:
 <p>Note that this guide is under active development. If you find things unclear or
 incorrect, or have any questions/comments, feel free to <a class="reference external" href="https://github.com/jcrist/jupyterhub-on-hadoop/issues">create an issue on
 github</a>.</p>
+<div class="section" id="why-jupyterhub">
+<h2>Why JupyterHub?<a class="headerlink" href="#why-jupyterhub" title="Permalink to this headline">¶</a></h2>
+<p>JupyterHub is not the only option for providing users a notebook environment
+with Hadoop integration, but we believe this setup has some benefits over other
+options.</p>
+<ul class="simple">
+<li><p><strong>Familiar</strong>: JupyterHub provides the same <a class="reference external" href="https://jupyter.org/">Jupyter</a> interface users know and
+love. It integrates well with the existing Data Science ecosystem, and is
+used extensively in both the private and public sector.</p></li>
+<li><p><strong>Extensible</strong>: JupyterHub is open source and community supported, and has a
+large ecosystem of plugins. It can support <a class="reference external" href="https://github.com/jupyter/jupyter/wiki/Jupyter-kernels">dozens of languages</a> (Python, R,
+Julia, Scala…), and user interfaces (Jupyter Notebooks, JupyterLab,
+RStudio…).</p></li>
+<li><p><strong>Scalable</strong>: With JupyterHub, each user gets their own environment running
+in their own private container. This reduces the load on a single node, and
+allows resource usage to scale dynamically with the number of users. For
+large data, tools such as <a class="reference external" href="https://spark.apache.org/">Spark</a> and <a class="reference external" href="https://dask.org/">Dask</a> work natively with no additional
+overhead.</p></li>
+<li><p><strong>Portable</strong>: JupyterHub is flexible and isn’t bound to a single cluster
+manager. It runs great on clusters (Kubernetes, Hadoop, HPC…) as well
+as single machines. This means that if you change your infrastructure in the
+future you can still keep using JupyterHub.</p></li>
+</ul>
+</div>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>JupyterHub is divided into three separate components:</p>
@@ -66,8 +90,8 @@ node.</p>
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>As cluster management practices differ, we hope to provide several options for
 installation. Currently only a manual installation tutorial is provided - if
-you’re interested in providing alternative options (<a class="reference external" href="https://github.com/jcrist/jupyterhub-on-hadoop/issues/1">Cloudera Parcel</a>, etc…)
-please <a class="reference external" href="https://github.com/jcrist/jupyterhub-on-hadoop/">get in touch on github</a>.</p>
+you’re interested in providing alternative options (<a class="reference external" href="https://github.com/jcrist/jupyterhub-on-hadoop/issues/1">Cloudera Parcels</a>,
+<a class="reference external" href="https://github.com/jcrist/jupyterhub-on-hadoop/issues/8">RPMs</a>…) please <a class="reference external" href="https://github.com/jcrist/jupyterhub-on-hadoop/">get in touch on github</a>.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="manual-installation.html"><span class="doc">Manual Installation</span></a></p></li>
 </ul>
