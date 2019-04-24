@@ -114,6 +114,7 @@ customization.
 
     installation
     customization
+    demo
 
 
 .. _JupyterHub: https://jupyterhub.readthedocs.io/
