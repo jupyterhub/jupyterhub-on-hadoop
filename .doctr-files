@@ -5,6 +5,7 @@
 ./_sources/contents-managers.rst.txt
 ./_sources/customization.rst.txt
 ./_sources/dask.rst.txt
+./_sources/demo.rst.txt
 ./_sources/enable-https.rst.txt
 ./_sources/index.rst.txt
 ./_sources/installation.rst.txt
@@ -32,6 +33,7 @@
 ./contents-managers.html
 ./customization.html
 ./dask.html
+./demo.html
 ./enable-https.html
 ./genindex.html
 ./index.html
