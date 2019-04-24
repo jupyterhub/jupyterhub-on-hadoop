@@ -14,6 +14,23 @@ incorrect, or have any questions/comments, feel free to `create an issue on
 github`_.
 
 
+Walkthrough
+-----------
+
+.. raw:: html
+
+    <div style="text-align:center">
+      <iframe
+        width="640"
+        height="385"
+        src="https://www.youtube.com/embed/M7T8Xnj9M6c"
+        frameborder="0"
+        allow="autoplay; encrypted-media;"
+        allowfullscreen>
+      </iframe>
+    </div>
+
+
 Why JupyterHub?
 ---------------
 
@@ -42,8 +59,8 @@ options.
   future you can still keep using JupyterHub.
 
 
-Overview
---------
+Architecture Overview
+---------------------
 
 JupyterHub is divided into three separate components:
 
