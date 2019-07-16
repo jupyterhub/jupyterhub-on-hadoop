@@ -114,7 +114,7 @@ For more information see the `remote user authenticator docs`_.
 .. _authenticator: https://jupyterhub.readthedocs.io/en/stable/reference/authenticators.html
 .. _dummy authenticator: https://github.com/jupyterhub/dummyauthenticator
 .. _kerberos authenticator:
-.. _kerberos authenticator docs: https://jcrist.github.io/kerberosauthenticator/
+.. _kerberos authenticator docs: https://jupyterhub-kerberosauthenticator.readthedocs.io/
 .. _Kerberos: https://web.mit.edu/kerberos/
 .. _fully qualified domain name: https://en.wikipedia.org/wiki/Fully_qualified_domain_name
 .. _LDAP authenticator:

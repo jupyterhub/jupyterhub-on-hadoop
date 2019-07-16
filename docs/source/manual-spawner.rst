@@ -329,7 +329,7 @@ In summary, an example ``jupyterhub_config.py`` configuration enabling
 
 .. _spawner: https://jupyterhub.readthedocs.io/en/stable/reference/spawners.html
 .. _YarnSpawner documentation:
-.. _yarnspawner: https://jcrist.github.io/yarnspawner/
+.. _yarnspawner: https://jupyterhub-yarnspawner.readthedocs.io/
 .. _proxy user: https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/Superusers.html
 .. _conda-pack: https://conda.github.io/conda-pack/
 .. _conda: http://conda.io/

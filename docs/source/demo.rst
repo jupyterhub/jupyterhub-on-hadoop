@@ -3,7 +3,7 @@ Docker-Compose Demo
 
 For demonstration and experimentation purposes, a docker-compose_ setup can be
 found `here
-<https://github.com/jcrist/jupyterhub-on-hadoop/tree/master/docker-demo>`__.
+<https://github.com/jupyterhub/jupyterhub-on-hadoop/tree/master/docker-demo>`__.
 
 To run, first install docker_ and docker-compose_, following the instructions
 for your OS. You'll also need to make sure that docker is started with
@@ -15,7 +15,7 @@ The demo cluster can then be started as follows:
 .. code-block:: shell
 
     # Clone the repository
-    $ git clone https://github.com/jcrist/jupyterhub-on-hadoop.git
+    $ git clone https://github.com/jupyterhub/jupyterhub-on-hadoop.git
 
     # Enter the `docker-demo` directory
     $ cd jupyterhub-on-hadoop/docker-demo

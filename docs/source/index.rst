@@ -122,10 +122,10 @@ customization.
 .. _notebook: https://jupyter.org/
 .. _Zero-to-JupyterHub-Kubernetes: https://zero-to-jupyterhub.readthedocs.io/
 .. _Hadoop Cluster: https://hadoop.apache.org/
-.. _create an issue on github: https://github.com/jcrist/jupyterhub-on-hadoop/issues
+.. _create an issue on github: https://github.com/jupyterhub/jupyterhub-on-hadoop/issues
 .. _dozens of languages: https://github.com/jupyter/jupyter/wiki/Jupyter-kernels
 .. _Dask: https://dask.org/
 .. _Spark: https://spark.apache.org/
-.. _Cloudera Parcels: https://github.com/jcrist/jupyterhub-on-hadoop/issues/1
-.. _RPMs: https://github.com/jcrist/jupyterhub-on-hadoop/issues/8
-.. _get in touch on github: https://github.com/jcrist/jupyterhub-on-hadoop/
+.. _Cloudera Parcels: https://github.com/jupyterhub/jupyterhub-on-hadoop/issues/1
+.. _RPMs: https://github.com/jupyterhub/jupyterhub-on-hadoop/issues/8
+.. _get in touch on github: https://github.com/jupyterhub/jupyterhub-on-hadoop/

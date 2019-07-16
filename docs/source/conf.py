@@ -18,8 +18,8 @@ extensions = ['sphinx.ext.extlinks']
 numpydoc_show_class_members = False
 
 extlinks = {
-    'issue': ('https://github.com/jcrist/jupyterhub-on-hadoop/issues/%s', 'Issue #'),
-    'pr': ('https://github.com/jcrist/jupyterhub-on-hadoop/pull/%s', 'PR #')
+    'issue': ('https://github.com/jupyterhub/jupyterhub-on-hadoop/issues/%s', 'Issue #'),
+    'pr': ('https://github.com/jupyterhub/jupyterhub-on-hadoop/pull/%s', 'PR #')
 }
 
 # Sphinx Theme
@@ -31,7 +31,7 @@ html_theme_options = {
     'description': 'Documentation for deploying JupyterHub on a Hadoop Cluster',
     'github_button': True,
     'github_count': False,
-    'github_user': 'jcrist',
+    'github_user': 'jupyterhub',
     'github_repo': 'jupyterhub-on-hadoop',
     'travis_button': True,
     'show_powered_by': False,
