@@ -33,7 +33,7 @@ html_theme_options = {
     'github_count': False,
     'github_user': 'jupyterhub',
     'github_repo': 'jupyterhub-on-hadoop',
-    'travis_button': True,
+    'travis_button': False,
     'show_powered_by': False,
     'page_width': '960px',
     'sidebar_width': '250px',
